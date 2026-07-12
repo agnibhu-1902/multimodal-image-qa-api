@@ -35,8 +35,6 @@ async def answer_image(request: ImageQARequest):
                 "cohere/north-mini-code:free",
                 "openai/gpt-oss-20b:free",
                 "google/gemma-4-31b-it:free",
-                "google/gemma-4-26b-a4b-it:free",
-                "meta-llama/llama-4-maverick:free",
             ],
             "route": "fallback",
         },
