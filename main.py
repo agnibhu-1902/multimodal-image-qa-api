@@ -35,7 +35,6 @@ async def answer_image(request: ImageQARequest):
                 "google/gemma-4-31b-it:free",
                 "google/gemma-4-26b-a4b-it:free",
                 "meta-llama/llama-4-maverick:free",
-                "mistralai/mistral-small-3.1-24b-instruct:free",
             ],
             "route": "fallback",
         },
