@@ -30,6 +30,15 @@ class ImageQARequest(BaseModel):
 async def answer_image(request: ImageQARequest):
     response = client.chat.completions.create(
         model="google/gemma-4-31b-it:free",
+        extra_body={
+            "models": [
+                "google/gemma-4-31b-it:free",
+                "google/gemma-4-26b-a4b-it:free",
+                "meta-llama/llama-4-maverick:free",
+                "mistralai/mistral-small-3.1-24b-instruct:free",
+            ],
+            "route": "fallback",
+        },
         messages=[
             {
                 "role": "user",
