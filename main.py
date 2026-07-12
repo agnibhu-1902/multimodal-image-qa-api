@@ -29,9 +29,10 @@ class ImageQARequest(BaseModel):
 @app.post("/answer-image")
 async def answer_image(request: ImageQARequest):
     response = client.chat.completions.create(
-        model="google/gemma-4-31b-it:free",
+        model="openai/gpt-oss-20b:free",
         extra_body={
             "models": [
+                "openai/gpt-oss-20b:free",
                 "google/gemma-4-31b-it:free",
                 "google/gemma-4-26b-a4b-it:free",
                 "meta-llama/llama-4-maverick:free",
