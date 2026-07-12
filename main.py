@@ -32,7 +32,7 @@ async def answer_image(request: ImageQARequest):
         model="cohere/north-mini-code:free",
         extra_body={
             "models": [
-                "cohere/north-mini-code:free";
+                "cohere/north-mini-code:free",
                 "openai/gpt-oss-20b:free",
                 "google/gemma-4-31b-it:free",
                 "google/gemma-4-26b-a4b-it:free",
