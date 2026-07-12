@@ -29,11 +29,11 @@ class ImageQARequest(BaseModel):
 @app.post("/answer-image")
 async def answer_image(request: ImageQARequest):
     response = client.chat.completions.create(
-        model="cohere/north-mini-code:free",
+        model="openai/gpt-oss-20b:free",
         extra_body={
             "models": [
-                "cohere/north-mini-code:free",
                 "openai/gpt-oss-20b:free",
+                "cohere/north-mini-code:free",
                 "google/gemma-4-31b-it:free"
             ],
             "route": "fallback",
