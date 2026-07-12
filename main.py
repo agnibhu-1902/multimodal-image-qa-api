@@ -2,14 +2,14 @@ import base64
 import os
 from io import BytesIO
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 from pydantic import BaseModel
 
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash")
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 app = FastAPI()
 
@@ -29,7 +29,6 @@ class ImageQARequest(BaseModel):
 @app.post("/answer-image")
 async def answer_image(request: ImageQARequest):
     image_bytes = base64.b64decode(request.image_base64)
-    image = Image.open(BytesIO(image_bytes))
 
     prompt = f"""Look at this image carefully and answer the question below.
 Return ONLY the answer value — no extra words, no units, no currency symbols.
@@ -38,5 +37,12 @@ Do not add any explanation.
 
 Question: {request.question}"""
 
-    response = model.generate_content([prompt, image])
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=[
+            prompt,
+            types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
+        ],
+    )
+
     return {"answer": response.text.strip()}
