@@ -1,15 +1,15 @@
 import base64
 import os
-from io import BytesIO
 
-from google import genai
-from google.genai import types
+from openai import OpenAI
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from PIL import Image
 from pydantic import BaseModel
 
-client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=os.environ["OPENROUTER_API_KEY"],
+)
 
 app = FastAPI()
 
@@ -28,21 +28,32 @@ class ImageQARequest(BaseModel):
 
 @app.post("/answer-image")
 async def answer_image(request: ImageQARequest):
-    image_bytes = base64.b64decode(request.image_base64)
-
-    prompt = f"""Look at this image carefully and answer the question below.
-Return ONLY the answer value — no extra words, no units, no currency symbols.
-If the answer is numeric (e.g. a total, a score, a price), return just the number like: 4089.35
-Do not add any explanation.
-
-Question: {request.question}"""
-
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=[
-            prompt,
-            types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
+    response = client.chat.completions.create(
+        model="google/gemini-2.0-flash-exp:free",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{request.image_base64}"
+                        },
+                    },
+                    {
+                        "type": "text",
+                        "text": (
+                            f"Look at this image carefully and answer the question below.\n"
+                            f"Return ONLY the answer value — no extra words, no units, no currency symbols.\n"
+                            f"If the answer is numeric, return just the number like: 4089.35\n"
+                            f"Do not add any explanation.\n\n"
+                            f"Question: {request.question}"
+                        ),
+                    },
+                ],
+            }
         ],
     )
 
-    return {"answer": response.text.strip()}
+    answer = response.choices[0].message.content.strip()
+    return {"answer": answer}
